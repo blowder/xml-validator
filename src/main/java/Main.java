@@ -19,7 +19,10 @@ public class Main {
     public static void main(String[] args) throws CmdLineException, IOException, SAXException {
         RunOptions runOptions = new RunOptions().parseArgs(args);
 
-        Validator validator = buildValidator(runOptions);
+        Schema schema = initSchema(runOptions.getXsdPath());
+
+        //TODO: parallel and add correct handlers
+        Validator validator = schema.newValidator();
         validator.setErrorHandler(
                 new ErrorHandler() {
                     @Override
@@ -29,6 +32,7 @@ public class Main {
 
                     @Override
                     public void error(SAXParseException e) throws SAXException {
+                        //todo: save errors to log file
                         System.out.println(String.format("Error happened in line:%s with message:%s", e.getLineNumber(), e.getMessage()));
                     }
 
@@ -52,10 +56,8 @@ public class Main {
 
     }
 
-    private static Validator buildValidator(RunOptions runOptions) throws SAXException {
-        SchemaFactory factory =
-                SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema = factory.newSchema(new StreamSource(runOptions.getXsdPath()));
-        return schema.newValidator();
+    private static Schema initSchema(File xsdFile) throws SAXException {
+        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        return factory.newSchema(new StreamSource(xsdFile));
     }
 }
