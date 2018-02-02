@@ -16,6 +16,8 @@ import java.nio.file.Path;
 
 
 public class Main {
+
+
     public static void main(String[] args) throws CmdLineException, IOException, SAXException {
         RunOptions runOptions = new RunOptions().parseArgs(args);
 
